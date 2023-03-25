@@ -1,9 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
+import json
 import database
-from bs4 import BeautifulSoup
-import requests
-import re
 
 # from youtube_transcript_api import YouTubeTranscriptApi
 # print(YouTubeTranscriptApi.get_transcript("lZ3bPUKo5zc"))
@@ -15,14 +13,6 @@ import re
 app = Flask(__name__)
 CORS(app)
 
-def __get_playlist_videos(playlist_id):
-    req = requests.get(f"https://www.youtube.com/playlist?list={playlist_id}")
-    matches = re.findall('"watchEndpoint":\\{"videoId":"..........."', req.text)
-    playlist_video_ids = set()
-    for match in matches:
-        playlist_video_ids.add(match[28:-1])
-    return list(playlist_video_ids)
-
 @app.route("/")
 def hello_world():
     return "<p>Hello, RowdyHacks2023-backend!</p>"
@@ -32,8 +22,8 @@ def get_user(user_id):
     user = database.get_user(user_id)
     user_dict = {
         "id": user.id,
-        "courses": user.courses,
-        "lectures": user.videos
+        "courses": json.loads(user.courses),
+        "lectures": json.loads(user.videos)
     }
     return user_dict
 
@@ -54,10 +44,25 @@ def add_user_lecture(user_id, lecture_id):
 
 @app.route("/course/<course_id>")
 def get_or_create_course(course_id):
-    playlist_videos = __get_playlist_videos(course_id)
-    return playlist_videos
+    try:
+        course = database.get_course(course_id)
+    except:
+        database.create_course(course_id)
+    
+    course = database.get_course(course_id)
+    course_dict = {
+        "id": course.id,
+        "courses": json.loads(course.lectures)
+    }
+    return course_dict
+
+    
 
 @app.route("/lecture/<lecture_id>")
 def get_or_create_lecture(lecture_id):
     # TODO
     pass
+
+
+if __name__ == "__main__":
+    app.run(port=9001)
