@@ -2,7 +2,6 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
-from sqlalchemy import ARRAY
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
@@ -12,8 +11,8 @@ Base = declarative_base()
 class UserData(Base):
     __tablename__ = "user_data"
     id = Column(String, primary_key=True)  # User's email address
-    courses = Column(ARRAY(String))
-    videos = Column(ARRAY(String))
+    courses = Column(String)  # JSON Array
+    videos = Column(String)  # JSON Array
     quiz_question_responses = relationship("QuizQuestionResponse")  # User -> QuizQuestionResponse (one to many)
 
     def __repr__(self) -> str:
@@ -22,7 +21,7 @@ class UserData(Base):
 class Course(Base):  # i.e. playlist
     __tablename__ = "course"
     id = Column(String, primary_key=True)  # YouTube playlist ID
-    lectures = Column(ARRAY(String))
+    lectures = Column(String)  # JSON Array
 
     def __repr__(self) -> str:
         return f"Course(id={self.id!r}, lectures={self.lectures!r})"
@@ -43,7 +42,7 @@ class QuizQuestion(Base):
     lecture_id = Column(ForeignKey("lecture.id"))  # Lecture -> QuizQuestion (one to many)
     prompt = Column(String)
     question_type = Column(String)
-    multiplechoice_options = Column(ARRAY(String))
+    multiplechoice_options = Column(String)  # JSON Array
     multiplechoice_correctanswer_index = Column(Integer)
 
     def __repr__(self) -> str:
