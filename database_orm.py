@@ -14,7 +14,7 @@ class UserData(Base):
     id = Column(String, primary_key=True)  # User's email address
     courses = Column(ARRAY(String))
     videos = Column(ARRAY(String))
-    quiz_question_responses = relationship("QuizQuestionResponse")
+    quiz_question_responses = relationship("QuizQuestionResponse")  # User -> QuizQuestionResponse (one to many)
 
     def __repr__(self) -> str:
         return f"UserData(id={self.id!r}, courses={self.courses!r}), videos={self.videos!r})"
@@ -32,7 +32,7 @@ class Lecture(Base):  # i.e. video
     id = Column(String, primary_key=True)  # YouTube video ID
     transcript_json = Column(String)
     transcript_string = Column(String)
-    quiz_questions = relationship("QuizQuestion")
+    quiz_questions = relationship("QuizQuestion")  # Lecture -> QuizQuestion (one to many)
 
     def __repr__(self) -> str:
         return f"Lecture(id={self.id!r}, transcript_json={self.transcript_json!r}, transcript_string={self.transcript_string!r})"
@@ -40,7 +40,7 @@ class Lecture(Base):  # i.e. video
 class QuizQuestion(Base):
     __tablename__ = "quiz_question"
     id = Column(UUID(as_uuid=True), primary_key=True)  # Unique UUID
-    lecture_id = Column(ForeignKey("lecture.id"))
+    lecture_id = Column(ForeignKey("lecture.id"))  # Lecture -> QuizQuestion (one to many)
     prompt = Column(String)
     question_type = Column(String)
     multiplechoice_options = Column(ARRAY(String))
@@ -52,7 +52,7 @@ class QuizQuestion(Base):
 class QuizQuestionResponse(Base):
     __tablename__ = "quiz_question_response"
     id = Column(String, primary_key=True)  # Unique UUID
-    user_id = Column(ForeignKey("user_data.id"))
+    user_id = Column(ForeignKey("user_data.id"))  # User -> QuizQuestionResponse (one to many)
     quiz_question_id = Column(UUID(as_uuid=True), primary_key=True)  # Quiz Question UUID
     multiple_choice_response_index = Column(Integer)
     free_response_response = Column(String)
@@ -74,7 +74,7 @@ class QuizQuestionResponse(Base):
 # Transcript - JSON
 # QuizQuestions - QuizQuestion[]
 
-# QuizQuestion:                         Lecture -> QuizQuestion (one to many)
+# QuizQuestion:                         
 # (primary key) - UUID
 # Lecture - Lecture
 # Prompt - Text
@@ -83,7 +83,7 @@ class QuizQuestionResponse(Base):
 # MultipleChoiceCorrectAnswerIndex - Integer
 
 
-# QuizQuestionResponse:          User -> QuizQuestionResponse (one to many)
+# QuizQuestionResponse:          
 # (primary key) - “quiz question uuid”
 # MultipleChoiceResponseIndex - Integer
 # FreeResponseResponse - Text

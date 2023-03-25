@@ -1,23 +1,34 @@
-import sqlalchemy
-from dotenv import load_dotenv
-load_dotenv()
-from os import environ
-from database_orm import *
-from sqlalchemy.orm import Session
-import uuid
+from flask import Flask, request
+from flask_cors import CORS
+import database
 
-engine = sqlalchemy.create_engine(environ['DATABASE_URL_POSTGRESQL'], echo=False) # echo=True
-Base.metadata.create_all(engine)
-
-
-from youtube_transcript_api import YouTubeTranscriptApi
-
-
-
+# from youtube_transcript_api import YouTubeTranscriptApi
 # print(YouTubeTranscriptApi.get_transcript("lZ3bPUKo5zc"))
 
 
+app = Flask(__name__)
+CORS(app)
 
+@app.route("/")
+def hello_world():
+    return "<p>Hello, RowdyHacks2023-backend!</p>"
 
+@app.route("/user/<user_id>")
+def get_user(user_id):
+    user = database.get_user(user_id)
+    user_dict = {
+        "id": user.id,
+        "courses": user.courses,
+        "lectures": user.videos
+    }
+    return user_dict
 
+@app.route("/user/<user_id>/create")
+def create_user(user_id):
+    database.create_user(user_id)
+    return "done"
 
+@app.route("/user/<user_id>/addcourse/<course_id>")
+def add_user_course(user_id, course_id):
+    database.add_user_course(user_id, course_id)
+    return "done"
