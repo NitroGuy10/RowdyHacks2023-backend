@@ -36,3 +36,13 @@ def add_user_course(user_id, course_id):
         user = session.scalars(selection).one()
         user.courses = __json_append(user.courses, course_id)
         session.commit()
+
+def add_user_lecture(user_id, lecture_id):
+    with Session(engine) as session:
+        selection = sqlalchemy.select(UserData).where(UserData.id == user_id)
+        user = session.scalars(selection).one()
+        user.lectures = __json_append(user.lectures, lecture_id)
+        session.commit()
+
+def get_course(course_id):
+    pass
