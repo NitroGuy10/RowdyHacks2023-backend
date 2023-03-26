@@ -23,6 +23,8 @@ def hello_world():
 
 @app.route("/user/<user_id>")
 def get_user(user_id):
+    if not database.user_exists(user_id):
+        database.create_user(user_id)
     user = database.get_user(user_id)
     user_dict = {
         "id": user.id,
@@ -31,18 +33,22 @@ def get_user(user_id):
     }
     return user_dict
 
-@app.route("/user/<user_id>/create")
-def create_user(user_id):
-    database.create_user(user_id)
-    return "done"
+# @app.route("/user/<user_id>/create")
+# def create_user(user_id):
+#     database.create_user(user_id)
+#     return "done"
 
 @app.route("/user/<user_id>/addcourse/<course_id>")
 def add_user_course(user_id, course_id):
+    if not database.user_exists(user_id):
+        database.create_user(user_id)
     database.add_user_course(user_id, course_id)
     return "done"
 
 @app.route("/user/<user_id>/addlecture/<lecture_id>")
 def add_user_lecture(user_id, lecture_id):
+    if not database.user_exists(user_id):
+        database.create_user(user_id)
     database.add_user_lecture(user_id, lecture_id)
     return "done"
 

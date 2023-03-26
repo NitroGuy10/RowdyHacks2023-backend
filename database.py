@@ -39,6 +39,15 @@ def get_user(user_id):
         selection = sqlalchemy.select(UserData).where(UserData.id == user_id)
         return session.scalars(selection).one()
 
+def user_exists(user_id):
+    with Session(engine) as session:
+        selection = sqlalchemy.select(UserData).where(UserData.id == user_id)
+        try:
+            session.scalars(selection).one()
+            return True
+        except:
+            return False
+
 def create_user(user_id):
     with Session(engine) as session:
         entry = UserData(
