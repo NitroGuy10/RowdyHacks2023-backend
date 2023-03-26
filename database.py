@@ -54,6 +54,7 @@ def add_user_lecture(user_id, lecture_id):
         session.commit()
 
 def create_course(course_id):
+    # new_course = None
     playlist_videos_str = json.dumps(__get_playlist_videos(course_id))
     with Session(engine) as session:
         entry = Course(
@@ -61,9 +62,25 @@ def create_course(course_id):
             lectures = playlist_videos_str
         )
         session.add(entry)
+        # new_course = entry
         session.commit()
+    # return new_course
 
 def get_course(course_id):
     with Session(engine) as session:
         selection = sqlalchemy.select(Course).where(Course.id == course_id)
         return session.scalars(selection).one()
+
+def create_empty_lecture(lecture_id):
+    with Session(engine) as session:
+        entry = Lecture(
+            id = lecture_id,
+            transcript_json = "",
+            transcript_string = ""
+        )
+        session.add(entry)
+        session.commit()
+
+def get_lecture_questions(lecture_id):
+    # select quiz questions where lecture_id == lecture_id
+    pass
