@@ -21,8 +21,8 @@ CORS(app)
 def hello_world():
     return "<p>Hello, RowdyHacks2023-backend!</p>"
 
-@app.route("/user/<user_id>")
-def get_user(user_id):
+@app.route("/user/<user_id>/basic")
+def get_user_basic(user_id):
     if not database.user_exists(user_id):
         database.create_user(user_id)
     user = database.get_user(user_id)
@@ -30,6 +30,28 @@ def get_user(user_id):
         "id": user.id,
         "courses": json.loads(user.courses),
         "lectures": json.loads(user.videos)
+    }
+    return user_dict
+
+@app.route("/user/<user_id>")
+def get_user(user_id):
+    if not database.user_exists(user_id):
+        database.create_user(user_id)
+    user = database.get_user(user_id)
+
+    courses = {}
+    for course_id in json.loads(user.courses):
+        course = get_or_create_course(course_id)
+        lectures = {}
+        for lecture_id in course["lectures"]:
+            lecture = get_lecture(lecture_id)
+            lectures[lecture_id] = (lecture)
+        course["lectures"] = lectures
+        courses[course_id] = course
+
+    user_dict = {
+        "id": user.id,
+        "courses": courses
     }
     return user_dict
 
@@ -65,7 +87,7 @@ def get_or_create_course(course_id):
     
     course_dict = {
         "id": course.id,
-        "courses": json.loads(course.lectures)
+        "lectures": json.loads(course.lectures)
     }
     return course_dict
     # After this request responds, the client should make a request
