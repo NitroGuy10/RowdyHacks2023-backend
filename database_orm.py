@@ -24,6 +24,7 @@ class Course(Base):  # i.e. playlist
     lectures = Column(String)  # JSON Array
     title = Column(String)
     description = Column(String)
+    user_data = Column(String)  # JSON Object
 
     def __repr__(self) -> str:
         return f"Course(id={self.id!r}, lectures={self.lectures!r})"

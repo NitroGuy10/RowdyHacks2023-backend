@@ -88,6 +88,22 @@ def add_user_lecture(user_id, lecture_id):
         user.lectures = __json_append(user.lectures, lecture_id)
         session.commit()
 
+def update_user_course_score(course_id, user_id, num_attempted, num_correct):
+    with Session(engine) as session:
+        selection = sqlalchemy.select(Course).where(Course.id == course_id)
+        course = session.scalars(selection).one()
+        course_user_data = json.loads(course.user_data)
+        if user_id in course_user_data:
+            course_user_data[user_id]["num_attempted"] += num_attempted
+            course_user_data[user_id]["num_correct"] += num_correct
+        else:
+            course_user_data[user_id] = {
+                "num_attempted": num_attempted,
+                "num_correct": num_correct
+            }
+        course.user_data = json.dumps(course_user_data)
+        session.commit()
+
 def create_course(course_id):
     # new_course = None
     playlist_videos_str = json.dumps(__get_playlist_videos(course_id))
@@ -97,7 +113,8 @@ def create_course(course_id):
             id = course_id,
             lectures = playlist_videos_str,
             title = playlist_title,
-            description = "pending..."
+            description = "pending...",
+            user_data = "{}"
         )
         session.add(entry)
         # new_course = entry

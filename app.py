@@ -88,11 +88,17 @@ def get_or_create_course(course_id):
     course_dict = {
         "id": course.id,
         "title": course.title,
-        "lectures": json.loads(course.lectures)
+        "lectures": json.loads(course.lectures),
+        "user_data": json.loads(course.user_data)
     }
     return course_dict
     # After this request responds, the client should make a request
     # to generate for every lecture in the course
+
+@app.route("/course/<course_id>/adduserscores/<user_id>/<int:num_attempted>/<int:num_correct>")
+def add_course_user_scores(course_id, user_id, num_attempted, num_correct):
+    database.update_user_course_score(course_id, user_id, num_attempted, num_correct)
+    return "done"
 
 @app.route("/lecture/<lecture_id>/generate")
 def generate_lecture(lecture_id):
