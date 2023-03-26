@@ -161,9 +161,11 @@ def get_quiz_question(quiz_question_id):
         question = session.scalars(selection).one()
         return question
 
-def save_lecture_material(lecture_id, lecture_material):
+def save_lecture_material(lecture_id, lecture_material, summary):
+    print(type(summary))
+    print(summary)
     supplemental_material = {
-        "Summary": "Coming soon!",
+        "Summary": summary,
         "Study Guide": lecture_material["Study Guide"],
         "Resources": lecture_material["Resources"]
     }

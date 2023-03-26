@@ -6,6 +6,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 import json
 import time
 import database
+import MLfolder.summary as summary
 
 PRINTING_OR_SAVING = True  # False for printing, true for saving
 
@@ -27,6 +28,7 @@ def getQuizJSON(video_id, timeLimit, fullTranscript):
       for i in range(len(exampleTranscript)):
           fullTranscript += " " + exampleTranscript[i]["text"]
 
+    quiz_summary = summary.summarize(fullTranscript)
           
     fullTranscript = "This is the transcript: " + fullTranscript
 
@@ -64,7 +66,7 @@ def getQuizJSON(video_id, timeLimit, fullTranscript):
         # (ADD LATER) if function is eligible json format -> pass to database
         if (is_json(a)):
           if PRINTING_OR_SAVING:
-            database.save_lecture_material(video_id, json.loads(a))
+            database.save_lecture_material(video_id, json.loads(a), quiz_summary)
           else:
              print(a)
 
@@ -95,7 +97,7 @@ def getQuizJSON(video_id, timeLimit, fullTranscript):
         # (ADD LATER) if function is eligible json format -> pass to database
         if (is_json(a)):
           if PRINTING_OR_SAVING:
-            database.save_lecture_material(video_id, json.loads(a))
+            database.save_lecture_material(video_id, json.loads(a), quiz_summary)
           else:
              print(a)
 
