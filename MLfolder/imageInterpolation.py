@@ -1,20 +1,39 @@
 import cv2
+import dlib
 import numpy as np
 
 # Load the two images
-img1 = cv2.imread('image1.png')
-img2 = cv2.imread('image2.png')
+img1 = cv2.imread('ashrita.png')
+img2 = cv2.imread('harshitha.png')
 
-# Choose a set of corresponding points on each image
-points1 = np.array([[x1, y1], [x2, y2], ...])
-points2 = np.array([[x1, y1], [x2, y2], ...])
 
-# Calculate the transformation matrix
-M = cv2.estimateAffinePartial2D(points1, points2)[0]
 
-# Generate a series of intermediate images
-num_steps = 10
-for i in range(num_steps):
-    alpha = i / float(num_steps)
-    interpolated_img = cv2.addWeighted(img1, 1 - alpha, cv2.warpAffine(img1, M, img1.shape[1::-1]), alpha, 0)
-    cv2.imwrite('interpolation_step_{}.png'.format(i), interpolated_img)
+# Load face detector and landmark predictor
+detector = dlib.get_frontal_face_detector()
+predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+
+
+# Detect faces and landmarks in both images
+face1 = detector(img1)[0]
+face2 = detector(img2)[0]
+landmarks1 = predictor(img1, face1)
+landmarks2 = predictor(img2, face2)
+
+# Extract landmark coordinates as numpy arrays
+landmarks1 = np.array([[p.x, p.y] for p in landmarks1.parts()])
+landmarks2 = np.array([[p.x, p.y] for p in landmarks2.parts()])
+
+# Calculate affine transformation matrix
+M, _ = cv2.estimateAffinePartial2D(landmarks1, landmarks2)
+
+# Apply affine transformation to image 1
+aligned_img1 = cv2.warpAffine(img1, M, img2.shape[:2][::-1])
+
+# Merge images using alpha blending
+alpha = 0.5
+result = cv2.addWeighted(aligned_img1, alpha, img2, 1-alpha, 0)
+
+# Display the merged image
+cv2.imshow('Merged Image', result)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
