@@ -6,6 +6,7 @@ import MLfolder.generateQuiz2 as generateQuiz
 from dotenv import load_dotenv
 load_dotenv()
 from os import environ
+import MLfolder.frqGrader as frqGrader
 
 # from youtube_transcript_api import YouTubeTranscriptApi
 # print(YouTubeTranscriptApi.get_transcript("lZ3bPUKo5zc"))
@@ -134,6 +135,14 @@ def get_lecture(lecture_id):
     }
     return lecture_dict
     
+@app.route("/gradefrq/<quiz_question_id>", methods=['POST'])
+def grade_frq(quiz_question_id):
+    request_data = request.get_json()
+    quiz_question = database.get_quiz_question(quiz_question_id)
+    bot_answer = ". ".join(json.loads(quiz_question.freeresponse_correcttopics))
+    score = frqGrader.grade(request_data["essay"], bot_answer)
+    print(score)
+    return {"score": score}
 
 
 if __name__ == "__main__":

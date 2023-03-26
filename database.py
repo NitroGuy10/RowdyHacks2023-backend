@@ -155,6 +155,12 @@ def get_lecture(lecture_id):
         questions = session.scalars(selection).all()
         return (lecture, questions)
 
+def get_quiz_question(quiz_question_id):
+    with Session(engine) as session:
+        selection = sqlalchemy.select(QuizQuestion).where(QuizQuestion.id == quiz_question_id)
+        question = session.scalars(selection).one()
+        return question
+
 def save_lecture_material(lecture_id, lecture_material):
     supplemental_material = {
         "Summary": "Coming soon!",
