@@ -39,15 +39,15 @@ def get_user(user_id):
         database.create_user(user_id)
     user = database.get_user(user_id)
 
-    courses = {}
+    courses = []
     for course_id in json.loads(user.courses):
         course = get_or_create_course(course_id)
-        lectures = {}
+        lectures = []
         for lecture_id in course["lectures"]:
             lecture = get_lecture(lecture_id)
-            lectures[lecture_id] = (lecture)
+            lectures.append(lecture)
         course["lectures"] = lectures
-        courses[course_id] = course
+        courses.append(course)
 
     user_dict = {
         "id": user.id,
