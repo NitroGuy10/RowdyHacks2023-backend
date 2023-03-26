@@ -3,6 +3,9 @@ from flask_cors import CORS
 import json
 import database
 import MLfolder.generateQuiz2 as generateQuiz
+from dotenv import load_dotenv
+load_dotenv()
+from os import environ
 
 # from youtube_transcript_api import YouTubeTranscriptApi
 # print(YouTubeTranscriptApi.get_transcript("lZ3bPUKo5zc"))
@@ -97,4 +100,4 @@ def get_lecture(lecture_id):
 
 
 if __name__ == "__main__":
-    app.run(port=9001)
+    app.run(port=environ["PORT"])
