@@ -44,19 +44,20 @@ def add_user_lecture(user_id, lecture_id):
 
 @app.route("/course/<course_id>")
 def get_or_create_course(course_id):
+    course = None
     try:
         course = database.get_course(course_id)
     except:
         database.create_course(course_id)
+        course = database.get_course(course_id)
+        for lecture_id in json.loads(course.lectures):
+            database.create_empty_lecture(lecture_id)
     
-    course = database.get_course(course_id)
     course_dict = {
         "id": course.id,
         "courses": json.loads(course.lectures)
     }
     return course_dict
-
-    
 
 @app.route("/lecture/<lecture_id>")
 def get_or_create_lecture(lecture_id):
