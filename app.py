@@ -90,6 +90,7 @@ def get_lecture(lecture_id):
         quiz_questions_list.append(question_object)
 
     lecture_dict = {
+        "id": lecture_id,
         "transcript_json": lecture.transcript_json,
         "transcript_string": lecture.transcript_string,
         "supplemental_material": lecture.supplemental_material,
