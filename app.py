@@ -87,6 +87,7 @@ def get_or_create_course(course_id):
     
     course_dict = {
         "id": course.id,
+        "title": course.title,
         "lectures": json.loads(course.lectures)
     }
     return course_dict
