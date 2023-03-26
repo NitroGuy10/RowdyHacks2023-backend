@@ -75,6 +75,12 @@ def add_user_lecture(user_id, lecture_id):
     database.add_user_lecture(user_id, lecture_id)
     return "done"
 
+@app.route("/course/<course_id>/<user_id>")
+def get_or_create_course_and_initialize_userdata(course_id, user_id):
+    response = get_or_create_course(course_id)
+    database.update_user_course_score(course_id, user_id, 0, 0)
+    return response
+
 @app.route("/course/<course_id>")
 def get_or_create_course(course_id):
     course = None
