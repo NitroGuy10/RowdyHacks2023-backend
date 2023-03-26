@@ -100,4 +100,4 @@ def get_lecture(lecture_id):
 
 
 if __name__ == "__main__":
-    app.run(port=environ["PORT"])
+    app.run(host="0.0.0.0" ,port=environ["PORT"])
