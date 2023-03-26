@@ -75,7 +75,8 @@ def get_or_create_course(course_id):
 def generate_lecture(lecture_id):
     if not database.lecture_exists(lecture_id):
         database.create_empty_lecture(lecture_id)
-    generateQuiz.getQuizJSON(lecture_id, 60)
+    transcript = database.__get_transcript(lecture_id)
+    generateQuiz.getQuizJSON(lecture_id, 60, transcript)
 
     return "complete"
 

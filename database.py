@@ -8,6 +8,7 @@ import json
 import requests
 import re
 import uuid
+from youtube_transcript_api import YouTubeTranscriptApi
 
 engine = sqlalchemy.create_engine(environ['DATABASE_URL_POSTGRESQL'], echo=False) # echo=True
 Base.metadata.create_all(engine)
@@ -24,6 +25,21 @@ def __get_playlist_videos(playlist_id):
     for match in matches:
         playlist_video_ids.add(match[28:-1])
     return list(playlist_video_ids)
+
+def __get_playlist_title(playlist_id):
+    req = requests.get(f"https://www.youtube.com/playlist?list={playlist_id}")
+    search = re.search('<title>(.*) - YouTube</title>', req.text)
+    return search.group(1)
+
+def __get_transcript(video_id):
+    try:
+        exampleTranscript = YouTubeTranscriptApi.get_transcript(video_id)
+        fullTranscript = ""
+        for i in range(len(exampleTranscript)):
+            fullTranscript += " " + exampleTranscript[i]["text"]
+        return fullTranscript
+    except:
+        return "NO TRANSCRIPT"
 
 def __flatten_array(arr):
     flattened = []
@@ -75,10 +91,13 @@ def add_user_lecture(user_id, lecture_id):
 def create_course(course_id):
     # new_course = None
     playlist_videos_str = json.dumps(__get_playlist_videos(course_id))
+    playlist_title = __get_playlist_title(course_id)
     with Session(engine) as session:
         entry = Course(
             id = course_id,
-            lectures = playlist_videos_str
+            lectures = playlist_videos_str,
+            title = playlist_title,
+            description = "pending..."
         )
         session.add(entry)
         # new_course = entry
@@ -103,7 +122,7 @@ def create_empty_lecture(lecture_id):
 
 def lecture_exists(lecture_id):
     with Session(engine) as session:
-        selection = sqlalchemy.select(Course).where(Lecture.id == lecture_id)
+        selection = sqlalchemy.select(Lecture).where(Lecture.id == lecture_id)
         try:
             session.scalars(selection).one()
             return True

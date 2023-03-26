@@ -19,12 +19,16 @@ def is_json(myjson):
     return False
   return True
 
-def getQuizJSON(video_id, timeLimit):
+def getQuizJSON(video_id, timeLimit, fullTranscript):
     # video_id = 'bHIhgxav9LY'
-    exampleTranscript = YouTubeTranscriptApi.get_transcript(video_id)
-    fullTranscript = "This is the transcript: "
-    for i in range(len(exampleTranscript)):
-        fullTranscript += " " + exampleTranscript[i]["text"]
+    if fullTranscript is None:  # Should normally be passed in via parameter
+      exampleTranscript = YouTubeTranscriptApi.get_transcript(video_id)
+      fullTranscript = ""
+      for i in range(len(exampleTranscript)):
+          fullTranscript += " " + exampleTranscript[i]["text"]
+
+          
+    fullTranscript = "This is the transcript: " + fullTranscript
 
     questionsPrompt = 'Can you give me a quiz with answers based on the transcript. The quiz should have multiple choice questions with one correct answer and multiple incorrect answer choices given. The quiz should also have free response questions where the answer is a list of important topics in an correct answer to that question. Give 2 multiple choice question and 1 free response question. Make sure the answer is related to the transcript subject. Also, give a study guide and plan to cover all the material covered in the transcript. The study guide should have a breakdown/summary of topics and their main points. Give resources to learn each of the main topics as well as some advice and internet links to the resources. Please give me this information in JSON format. An example is this: {"quiz questions": [MC: multiple choice question 1, MC: multiple choice question 2, F: free response question 1, F: free response question 2 ], "quiz answers": [[MC: multiple choice question 1 correct answer, MC: multiple choice question 1 incorrect answer 1, MC: multiple choice question 1 incorrect answer 2], [MC: multiple choice question 2 correct answer, MC: multiple choice question 2 incorrect answer 1, MC: multiple choice question 2 incorrect answer 2]], [[F: free response question 1 answer topics], [F: free response question 2 answer topics]], "Study Guide": [StudyguideLine1, StudyguideLine2, StudyguideLine3], "Resources": ["Resource1 and web link to Resource1, Resource2 and web link to Resource2]}. Remember to put a \\ before any \" or \' you use. If the question or answer is of multiple choice, start it with the characters \'MC:\' and if the question or answer is of free response, start it with the characters \'FC:\' as indicated in the example. Make sure it it is in the format of a JSON and the example. Do not return any output besides the JSON formatted section. The content of the transcript is as follows: '
 
