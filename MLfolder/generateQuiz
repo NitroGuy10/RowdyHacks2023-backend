@@ -1,0 +1,139 @@
+import os
+import openai
+from youtube_transcript_api import YouTubeTranscriptApi
+import json
+import time
+import re
+from nltk import tokenize
+
+
+
+video_id = 'YRgBLVI3suM'
+exampleTranscript = YouTubeTranscriptApi.get_transcript(video_id, languages=['en-US', 'en'])
+fullTranscript = "This is the transcript: "
+for i in range(len(exampleTranscript)):
+    fullTranscript += " " + exampleTranscript[i]["text"]
+#print(fullTranscript)
+
+##Use your own openai.api_key
+openai.api_key = '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'
+
+
+
+
+
+
+#Add back study guide
+#Add back resources/advice
+
+
+def parseResponse(response):
+    words = tokenize.sent_tokenize(response)
+
+    mcq = []
+    mcaC = []
+    mcaI = []
+    frq = []
+    fra = []
+
+    onTerm = "mcq"
+
+    for i in range(len(words)):
+        if 'Multiple Choice Questions:' in words[i]:
+            onTerm = "mcq"
+        if '(Correct)' in words[i]:
+            onTerm = "mcaC"
+        if '(Incorrect)' in words[i]:
+            onTerm = "mcaI"
+        if 'Free Response Questions' in words[i]:
+            onTerm = "frq"
+        if 'Free Response Answers' in words[i]:
+            onTerm = "fra"
+
+        word = words[i].split(':')[-1]
+        word = word.replace('\n', "")
+        if '(Correct)' in word:
+            word = word.replace('(Correct)', "")
+        if '(Incorrect)' in word:
+            word = word.replace('(Incorrect)', "")
+        if onTerm == "mcq":
+            mcq.append(word)
+        if onTerm == "mcaC":
+            mcaC.append(word)
+        if onTerm == "mcaI":
+            mcaI.append(word)
+        if onTerm == "frq":
+            frq.append(word)
+        if onTerm == "fra":
+            fra.append(word)
+
+    formatDict = {}
+    listSet = [mcq, mcaC, mcaI, frq, fra]
+    listSetLabels = ["Multiple Choice Questions", "Correct Multiple Choice Answers", "Incorrect Multiple Choice Answers", "Free Response Questions", "Free Response Answers"]
+    for j in range(len(listSetLabels)):
+        formatDict[listSetLabels[j]] = listSet[j]
+    print(json.dumps(formatDict))
+    return(json.dumps(formatDict))
+        
+
+
+
+questionsPrompt = 'Give me a quiz based on the transcript with 5 multiple choice questions and 2 free response questions. The answer to the free response question should be a list of related words to the topic of the question. Do NOT add any formatting or schema. Use this format for the answers: Question 2: (Incorrect) answer 1. (Incorrect) answer 2. (Correct) answer 1. (Incorrect) answer 4. Please give the sections in the same format as this example. The example begins with a \'[\' character and ends with a \']\'. [Multiple Choice Questions: Question 1, Question 2; Multiple Choice Answers: (Correct or Incorrect) Answer A, (Correct or Incorrect) Answer B, (Correct or Incorrect) Answer C, (Correct or Incorrect) Answer D; Free Response Questions: Question 1, Question 2; Free Response Answers: Answer 1, Answer 2;]. The lines following make up the transcript to make a quiz from: '
+
+
+split = 500
+runs = len(fullTranscript) / (split * 4)
+for i in range(int(runs)):
+    print(i, '/', int(runs) + 1)
+    start = time.time()
+    actualText = "".join(fullTranscript[i*(split * 4):(i+1)*(split * 4)])
+    questionResponse = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages= [{"role": "user", "content": questionsPrompt + actualText}],
+    temperature=0.0,
+    top_p=1,
+    frequency_penalty=0,
+    presence_penalty=0
+    )
+
+    ret = questionResponse["choices"][0]["message"]["content"]
+    print(ret)
+
+    # formatPrompt = "Replace the questions in the following transcript line to fit this format: Question 1: text of question? The transcript is:["
+    # formatResponse = openai.ChatCompletion.create(
+    # model="gpt-3.5-turbo",
+    # messages= [{"role": "user", "content": formatPrompt + ret}],
+    # temperature=0.0,
+    # top_p=1,
+    # frequency_penalty=0,
+    # presence_penalty=0
+    # )
+
+    # ret = formatResponse["choices"][0]["message"]["content"]
+    # print(ret)
+    # parseResponse(ret)
+
+
+
+
+
+
+
+
+# actualText = "".join(fullTranscript[(int(runs))*(split * 4):])
+# questionResponse = openai.ChatCompletion.create(
+# model="gpt-3.5-turbo",
+# messages= [{"role": "user", "content": questionsPrompt + actualText}],
+# temperature=0.0,
+# top_p=1,
+# frequency_penalty=0,
+# presence_penalty=0
+# )
+# ret = questionResponse["choices"][0]["message"]["content"]
+    
+# parseResponse(ret)
+
+
+
+
+

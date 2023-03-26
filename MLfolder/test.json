@@ -1,0 +1,35 @@
+{
+    "quiz questions": [
+        "MC: After closing the switch, how long would it take for the bulb to light up?",
+        "MC: What is the correct answer to the previous question?",
+        "MC: What is the Poynting vector?",
+        "MC: What is the direction of the energy flow in a simple circuit with a battery and a light bulb?",
+        "MC: What was the problem with the first Trans Atlantic cable?",
+        "F: List three simplifying assumptions that need to be made about the circuit in order to answer the first question.",
+        "F: List three main points about how electrical energy flows according to Poynting's theory."
+    ],
+    "quiz answers": [
+        ["Half a second", "One second", "Two seconds", "1/c seconds", "None of the above"],
+        ["1/c seconds"],
+        ["A vector that describes the flow of electromagnetic energy through space", "A vector that describes the flow of electrons through a circuit", "A vector that describes the flow of magnetic energy through space"],
+        ["From the battery to the bulb", "From the bulb to the battery", "In both directions", "Nowhere"],
+        ["The iron sheath interfered with the propagation of electromagnetic fields", "The insulator was not strong enough", "The wires were not properly insulated"],
+        [["The wires have no resistance", "The light bulb turns on immediately when current passes through it", "The circuit consists of a battery, a switch, a light bulb, and two wires each 300,000 kilometers long"]],
+        [["Energy is transmitted by the electric and magnetic fields", "Electrons do not carry the energy", "The Poynting vector describes the flow of energy"]]
+    ],
+    "Study Guide": [
+        "Introduction to the circuit and the question about the light bulb",
+        "The misconception about how electrical energy is transmitted",
+        "Maxwell's equations and Poynting's vector",
+        "The direction of energy flow in a simple circuit",
+        "The problem with the first Trans Atlantic cable",
+        "Simplifying assumptions about the circuit",
+        "Main points about how electrical energy flows according to Poynting's theory"
+    ],
+    "Resources": [
+        "Maxwell's equations: https://en.wikipedia.org/wiki/Maxwell%27s_equations",
+        "Poynting's vector: https://en.wikipedia.org/wiki/Poynting_vector",
+        "Electricity and magnetism course on Khan Academy: https://www.khanacademy.org/science/electrical-engineering",
+        "Lutron's website: lutron.com/veritasium"
+    ]
+    }
