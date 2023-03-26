@@ -1,7 +1,8 @@
-from flask import Flask, request
+from flask import Flask, request, abort
 from flask_cors import CORS
 import json
 import database
+import MLfolder.generateQuiz2 as generateQuiz
 
 # from youtube_transcript_api import YouTubeTranscriptApi
 # print(YouTubeTranscriptApi.get_transcript("lZ3bPUKo5zc"))
@@ -58,11 +59,41 @@ def get_or_create_course(course_id):
         "courses": json.loads(course.lectures)
     }
     return course_dict
+    # After this request responds, the client should make a request
+    # to generate for every lecture in the course
+
+@app.route("/lecture/<lecture_id>/generate")
+def generate_lecture(lecture_id):
+    if not database.lecture_exists(lecture_id):
+        database.create_empty_lecture(lecture_id)
+    generateQuiz.getQuizJSON(lecture_id, 60)
+
+    return "complete"
 
 @app.route("/lecture/<lecture_id>")
-def get_or_create_lecture(lecture_id):
-    # TODO
-    pass
+def get_lecture(lecture_id):
+    lecture, questions = database.get_lecture(lecture_id)
+
+    quiz_questions_list = []
+    for question in questions:
+        question_object = {
+            "id": question.id,
+            "prompt": question.prompt,
+            "question_type": question.question_type,
+            "multiplechoice_options": json.loads(question.multiplechoice_options),
+            "multiplechoice_correctanswer_index": question.multiplechoice_correctanswer_index,
+            "freeresponse_correcttopics": json.loads(question.freeresponse_correcttopics)
+        }
+        quiz_questions_list.append(question_object)
+
+    lecture_dict = {
+        "transcript_json": lecture.transcript_json,
+        "transcript_string": lecture.transcript_string,
+        "supplemental_material": lecture.supplemental_material,
+        "quiz_questions": quiz_questions_list
+    }
+    return lecture_dict
+    
 
 
 if __name__ == "__main__":

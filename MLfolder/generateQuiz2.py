@@ -1,11 +1,16 @@
 import os
 import openai
+from dotenv import load_dotenv
+load_dotenv()
 from youtube_transcript_api import YouTubeTranscriptApi
 import json
 import time
+import database
+
+PRINTING_OR_SAVING = True  # False for printing, true for saving
 
 ##Use your own openai.api_key
-openai.api_key = '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'
+openai.api_key = os.environ["OPENAI_API_KEY"]
 
 def is_json(myjson):
   try:
@@ -15,7 +20,7 @@ def is_json(myjson):
   return True
 
 def getQuizJSON(video_id, timeLimit):
-    video_id = 'bHIhgxav9LY'
+    # video_id = 'bHIhgxav9LY'
     exampleTranscript = YouTubeTranscriptApi.get_transcript(video_id)
     fullTranscript = "This is the transcript: "
     for i in range(len(exampleTranscript)):
@@ -50,11 +55,14 @@ def getQuizJSON(video_id, timeLimit):
         a = questionResponse["choices"][0]["message"]["content"]
 
         #Temp (REMOVE LATER) print JSON output
-        print(a)
+        # print(a)
 
         # (ADD LATER) if function is eligible json format -> pass to database
-        # if (is_json(a)):
-           # Call Function to pass 'a' to Database
+        if (is_json(a)):
+          if PRINTING_OR_SAVING:
+            database.save_lecture_material(video_id, json.loads(a))
+          else:
+             print(a)
 
         #Increment Time
         end = time.time()
@@ -78,13 +86,16 @@ def getQuizJSON(video_id, timeLimit):
         )
 
         #Temp (REMOVE LATER) print JSON output
-        print(a)
+        # print(a)
 
         # (ADD LATER) if function is eligible json format -> pass to database
-        # if (is_json(a)):
-           # Call Function to pass 'a' to Database
+        if (is_json(a)):
+          if PRINTING_OR_SAVING:
+            database.save_lecture_material(video_id, json.loads(a))
+          else:
+             print(a)
 
 
     
 
-getQuizJSON('MqnpIwN7dz0', 60)
+# getQuizJSON('MqnpIwN7dz0', 60)
